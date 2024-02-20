@@ -1,34 +1,33 @@
-const tf = require('@tensorflow/tfjs-node');
-const fs = require('fs');
+const {getTrainingData, getRunningData} = require("./modules/trainingdata");
+const { Architect, Network, Trainer } = require("synaptic");
+const fs = require("fs");
 
-const IMAGE_WIDTH = 224;
-const IMAGE_HEIGHT = 224;
-const NUM_CLASSES = 2;
+// getTrainingData().then(data => {
+//     console.log(data);
+//     let inputLength = data[0].input.length;
+//     let outputLength = data[0].output.length;
 
-const trainingdata = fs.readdirSync("./trainingdata/");
+//     // train the network
+//     var myNetwork = new Architect.Perceptron(inputLength, 8, 8, outputLength);
+//     var trainer = new Trainer(myNetwork)
+//     trainer.train(data, {
+//         rate: .1,
+//         iterations: 50000,
+//         error: .005,
+//         shuffle: true,
+//         log: 50,
+//         cost: Trainer.cost.CROSS_ENTROPY
+//     });
 
-trainingdata.map(folder => {
-    console.log(folder);
-})
+//     //Save the model
+//     fs.writeFileSync("./model.json", JSON.stringify(myNetwork.toJSON()), {encoding: "utf8"});
+// });
 
-const cats = catsFiles.map((file) => {
-  const filePath = `${catsDir}/${file}`;
-  const buffer = fs.readFileSync(filePath);
-  const decodedImage = tf.node.decodeImage(buffer);
-  const resizedImage = tf.image.resizeBilinear(decodedImage, [IMAGE_WIDTH, IMAGE_HEIGHT]);
-  return resizedImage;
+getRunningData("./booster-original-24stk.jpg").then(data => {
+    const imported = Network.fromJSON(JSON.parse(fs.readFileSync("./model.json", {encoding: "utf8"})));
+    const output = imported.activate(data);
+    if (Math.max.apply(null, output) > 0.75) {
+        console.log(output);
+        console.log(fs.readdirSync("./data/")[output.indexOf(Math.max.apply(null, output))]);
+    }
 });
-
-const dogs = dogsFiles.map((file) => {
-  const filePath = `${dogsDir}/${file}`;
-  const buffer = fs.readFileSync(filePath);
-  const decodedImage = tf.node.decodeImage(buffer);
-  const resizedImage = tf.image.resizeBilinear(decodedImage, [IMAGE_WIDTH, IMAGE_HEIGHT]);
-  return resizedImage;
-});
-
-const images = cats.concat(dogs);
-const labels = tf.tensor2d(
-  Array.from({ length: cats.length }).fill([1, 0])
-  .concat(Array.from({ length: dogs.length }).fill([0, 1]))
-);
