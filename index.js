@@ -1,7 +1,7 @@
 const nn = require("./modules/imageclassifier");
 
-nn.run("./data/monster original/ImageHandler.jpg").then(data => {
-    console.log(data);
-});
+// nn.run("data/redbull original/RB10.jpg").then(data => {
+//     console.log(data);
+// });
 
-// nn.train();
+nn.train();

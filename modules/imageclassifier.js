@@ -8,7 +8,7 @@ function train() {
         let outputLength = data[0].output.length;
     
         // train the network
-        var myNetwork = new Architect.Perceptron(inputLength, 16, 16, outputLength);
+        var myNetwork = new Architect.Perceptron(inputLength, 32, 16, outputLength);
         var trainer = new Trainer(myNetwork)
         trainer.train(data, {
             rate: .1,

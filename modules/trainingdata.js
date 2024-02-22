@@ -1,6 +1,8 @@
 const fs = require("fs");
 const sharp = require("sharp");
 
+const imageSize = 32;
+
 function getTrainingData() {
     return new Promise((resolve, reject) => {
         const trainingdata = [];
@@ -13,7 +15,7 @@ function getTrainingData() {
             const images = fs.readdirSync(`./data/${folder}/`);
             images.forEach((image) => {
                 let buffer = fs.readFileSync(`./data/${folder}/${image}`)
-                sharp(buffer).resize(32, 32).raw().toBuffer().then(buffer => {
+                sharp(buffer).resize(imageSize, imageSize).raw().toBuffer().then(buffer => {
                     trainingdata.push({
                         input: [...buffer],
                         output: oneHot,
@@ -32,7 +34,7 @@ function getTrainingData() {
 function getRunningData(path) {
     return new Promise((resolve, reject) => { 
         let buffer = fs.readFileSync(path)
-        sharp(buffer).resize(32, 32).raw().toBuffer().then(buffer => {
+        sharp(buffer).resize(imageSize, imageSize).raw().toBuffer().then(buffer => {
             resolve([...buffer]);
         });
     });

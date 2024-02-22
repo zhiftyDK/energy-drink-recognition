@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node --max-old-space-size=6144 index.js"
   },
   "author": "zhiftyDK",
   "license": "ISC",
