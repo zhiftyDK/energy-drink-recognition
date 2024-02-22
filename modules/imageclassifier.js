@@ -4,19 +4,18 @@ const fs = require("fs");
 
 function train() {
     getTrainingData().then(data => {
-        console.log(data);
         let inputLength = data[0].input.length;
         let outputLength = data[0].output.length;
     
         // train the network
-        var myNetwork = new Architect.Perceptron(inputLength, 8, 8, outputLength);
+        var myNetwork = new Architect.Perceptron(inputLength, 16, 16, outputLength);
         var trainer = new Trainer(myNetwork)
         trainer.train(data, {
             rate: .1,
             iterations: 50000,
             error: .005,
             shuffle: true,
-            log: 50,
+            log: 1,
             cost: Trainer.cost.CROSS_ENTROPY
         });
     
