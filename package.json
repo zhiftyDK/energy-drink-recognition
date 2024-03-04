@@ -14,7 +14,6 @@
     "@tensorflow-models/mobilenet": "^2.1.1",
     "@tensorflow/tfjs": "^4.17.0",
     "canvas": "^2.11.2",
-    "image-classifier": "^1.1.0",
     "sharp": "^0.33.2"
   }
 }
