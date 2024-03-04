@@ -1,16 +1,20 @@
 {
-  "name": "energy-drink-recognition",
+  "name": "knn",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node --max-old-space-size=6144 index.js"
+    "start": "node index.js"
   },
-  "author": "zhiftyDK",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
   "dependencies": {
-    "fs": "^0.0.1-security",
-    "sharp": "^0.33.2",
-    "synaptic": "^1.1.4"
+    "@tensorflow-models/knn-classifier": "^1.2.6",
+    "@tensorflow-models/mobilenet": "^2.1.1",
+    "@tensorflow/tfjs": "^4.17.0",
+    "canvas": "^2.11.2",
+    "image-classifier": "^1.1.0",
+    "sharp": "^0.33.2"
   }
 }

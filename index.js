@@ -1,7 +1,7 @@
-const nn = require("./modules/imageclassifier");
+const knn = require("./modules/knn");
 
-// nn.run("data/redbull original/RB10.jpg").then(data => {
-//     console.log(data);
-// });
+// knn.process()
 
-nn.train();
+knn.compare("./Rtest.jpg").then(result => {
+    console.log(result);
+});
