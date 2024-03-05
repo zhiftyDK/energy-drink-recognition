@@ -30,6 +30,16 @@ async function loadDatasetFromJson(filename) {
     return dataset;
 }
 
+async function getImage(path) {
+    const buffer = fs.readFileSync(path);
+    const resizedBuffer = await sharp(buffer).resize(imageSize, imageSize).removeAlpha().toBuffer();
+    const image = await loadImage(resizedBuffer);
+    const canvas = createCanvas(imageSize, imageSize);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(image, 0, 0);
+    return tf.browser.fromPixels(canvas);
+}
+
 async function process() {
     const mobilenet = await mobilenetModule.load();
     let totalImages = 0;
@@ -37,13 +47,8 @@ async function process() {
     fs.readdirSync("./data/").forEach(classLabel => {
         totalImages += fs.readdirSync("./data/" + classLabel).length;
         fs.readdirSync("./data/" + classLabel).forEach(async (imagePath) => {
-            const buffer = fs.readFileSync(`./data/${classLabel}/${imagePath}`);
-            const resizedBuffer = await sharp(buffer).resize(imageSize, imageSize).removeAlpha().toBuffer();
-            const image = await loadImage(resizedBuffer);
-            const canvas = createCanvas(imageSize, imageSize);
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(image, 0, 0);
-            const logits = mobilenet.infer(tf.browser.fromPixels(canvas), true);
+            const image = await getImage(`./data/${classLabel}/${imagePath}`);
+            const logits = mobilenet.infer(image, true);
             classifier.addExample(logits, classLabel);
             iteration++;
             console.log(`Processing images: ${iteration}/${totalImages}`);
@@ -57,16 +62,11 @@ async function process() {
 
 async function compare(imagePath) {
     const mobilenet = await mobilenetModule.load();
-    const buffer = fs.readFileSync(imagePath);
     if(fs.existsSync("model.json")) {
         const dataset = await loadDatasetFromJson("model.json");
         classifier.setClassifierDataset(dataset);
-        const resizedBuffer = await sharp(buffer).resize(imageSize, imageSize).removeAlpha().toBuffer();
-        const image = await loadImage(resizedBuffer);
-        const canvas = createCanvas(imageSize, imageSize);
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(image, 0, 0);
-        const logits = mobilenet.infer(tf.browser.fromPixels(canvas), true);
+        const image = await getImage(imagePath);
+        const logits = mobilenet.infer(image, true);
         const prediction = await classifier.predictClass(logits);
         return prediction;
     } else {
