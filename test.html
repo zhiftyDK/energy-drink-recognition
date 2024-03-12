@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="camera">
+        <video id="video">Video stream not available.</video>
+        <button id="startbutton">Take photo</button>
+    </div>
+    <canvas id="canvas" style="display: none;"></canvas>
+    <script>
+        let imageCapture;
+        navigator.mediaDevices
+        .getUserMedia({ video: true, audio: false })
+        .then((stream) => {
+            video.srcObject = stream;
+            video.play();
+            const track = stream.getVideoTracks()[0];
+            imageCapture = new ImageCapture(track);
+        })
+        .catch((err) => {
+            console.error(`An error occurred: ${err}`);
+        });
+
+        document.getElementById("startbutton").addEventListener("click", () => {
+            imageCapture.grabFrame()
+            .then(imageBitmap => {
+                const canvas = document.getElementById("canvas");
+                canvas.width = imageBitmap.width;
+                canvas.height = imageBitmap.height;
+                const ctx = canvas.getContext('bitmaprenderer');
+                ctx.transferFromImageBitmap(imageBitmap);
+                new Promise((res) => canvas.toBlob(res)).then(blob => {
+                    const formData = new FormData();
+                    formData.append("files", blob);
+                    fetch("http://localhost:3000/compare", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => console.log(data));
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -30,8 +30,13 @@ async function loadDatasetFromJson(filename) {
     return dataset;
 }
 
-async function getImage(path) {
-    const buffer = fs.readFileSync(path);
+async function getImage(pathOrBuffer) {
+    let buffer;
+    if(typeof pathOrBuffer === "string") {
+        buffer = fs.readFileSync(path);
+    } else {
+        buffer = pathOrBuffer;
+    }
     const resizedBuffer = await sharp(buffer).resize(imageSize, imageSize).removeAlpha().toBuffer();
     const image = await loadImage(resizedBuffer);
     const canvas = createCanvas(imageSize, imageSize);
@@ -40,14 +45,14 @@ async function getImage(path) {
     return tf.browser.fromPixels(canvas);
 }
 
-async function process() {
+async function process(datasetPath) {
     const mobilenet = await mobilenetModule.load();
     let totalImages = 0;
     let iteration = 0;
-    fs.readdirSync("./data/").forEach(classLabel => {
-        totalImages += fs.readdirSync("./data/" + classLabel).length;
-        fs.readdirSync("./data/" + classLabel).forEach(async (imagePath) => {
-            const image = await getImage(`./data/${classLabel}/${imagePath}`);
+    fs.readdirSync(datasetPath).forEach(classLabel => {
+        totalImages += fs.readdirSync(datasetPath + classLabel).length;
+        fs.readdirSync(datasetPath + classLabel).forEach(async (imagePath) => {
+            const image = await getImage(`${datasetPath}${classLabel}/${imagePath}`);
             const logits = mobilenet.infer(image, true);
             classifier.addExample(logits, classLabel);
             iteration++;
@@ -60,12 +65,12 @@ async function process() {
     });
 }
 
-async function compare(imagePath) {
-    const mobilenet = await mobilenetModule.load();
+async function compare(imagePathOrBuffer) {
     if(fs.existsSync("model.json")) {
+        const mobilenet = await mobilenetModule.load();
         const dataset = await loadDatasetFromJson("model.json");
         classifier.setClassifierDataset(dataset);
-        const image = await getImage(imagePath);
+        const image = await getImage(imagePathOrBuffer);
         const logits = mobilenet.infer(image, true);
         const prediction = await classifier.predictClass(logits);
         return prediction;
