@@ -11,7 +11,7 @@ ratingsdb.loadDatabase();
 
 app.use(cors());
 
-app.post("/compare", multer().single("files"), (req, res) => {
+app.post("/compare", multer().single("file"), (req, res) => {
     imageClassifier.compare(req.file.buffer).then(result => {
         res.json(result);
     });

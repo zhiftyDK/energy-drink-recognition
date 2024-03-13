@@ -34,6 +34,7 @@
                 const ctx = canvas.getContext('bitmaprenderer');
                 ctx.transferFromImageBitmap(imageBitmap);
                 new Promise((res) => canvas.toBlob(res)).then(blob => {
+                    console.log(blob);
                     const formData = new FormData();
                     formData.append("files", blob);
                     fetch("http://localhost:3000/compare", {
