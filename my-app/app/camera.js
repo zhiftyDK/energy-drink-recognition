@@ -46,7 +46,7 @@ const CameraPage = () => {
             type: photo.type,
             uri: photoURI
         });
-        fetch("http://192.168.1.71:3000/compare", {
+        fetch("http://172.20.10.2:3000/compare", {
             method: "POST",
             body: formData
         })

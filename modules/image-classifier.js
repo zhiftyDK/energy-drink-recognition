@@ -33,7 +33,7 @@ async function loadDatasetFromJson(filename) {
 async function getImage(pathOrBuffer) {
     let buffer;
     if(typeof pathOrBuffer === "string") {
-        buffer = fs.readFileSync(path);
+        buffer = fs.readFileSync(pathOrBuffer);
     } else {
         buffer = pathOrBuffer;
     }
