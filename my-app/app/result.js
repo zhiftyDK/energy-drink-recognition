@@ -5,14 +5,30 @@ import { router } from "expo-router";
 
 const ResultPage = () => {
     const params = useLocalSearchParams();
+    
+    fetch("http://192.168.1.71:3000/ratings/get", {
+        method: "POST",
+        body: JSON.stringify({
+            energydrink: JSON.parse(params.recogResult).label,
+        }),
+        headers: {
+            "Content-Type": "application/json",
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+    });
+
     return (
         <View style={styles.container}>
-            <Pressable onPress={() => router.push("/camera")}>
-                <Text style={styles.button}>Back</Text>
-            </Pressable>
             <Text style={styles.header}>Result: {JSON.parse(params.recogResult).label}</Text>
+            <Pressable onPress={() => router.push("/camera")}>
+                <Text style={styles.button}>Recognize again</Text>
+            </Pressable>
         </View>
     );
+
 };
 
 const styles = StyleSheet.create({
