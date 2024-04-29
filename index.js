@@ -17,7 +17,7 @@ app.post("/compare", multer().single("file"), (req, res) => {
     });
 });
 
-// imageClassifier.process("./data/");
+// imageClassifier.process("./energydrinks/");
 
 
 
