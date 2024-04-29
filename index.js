@@ -20,8 +20,6 @@ app.post("/compare", multer().single("file"), (req, res) => {
 
 // imageClassifier.process("./energydrinks/");
 
-
-
 app.listen(3000, () => {
     console.log("Server is running!");
 });
