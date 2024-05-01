@@ -1,10 +1,11 @@
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';
 import { router } from "expo-router";
 
 const ResultPage = () => {
     const params = useLocalSearchParams();
+    const [ratings, setRatings] = useState([]);
     
     fetch("http://192.168.1.71:3000/ratings/get", {
         method: "POST",
@@ -18,6 +19,7 @@ const ResultPage = () => {
     .then(response => response.json())
     .then(data => {
         console.log(data);
+        setRatings(data);
     });
 
     return (
@@ -26,6 +28,9 @@ const ResultPage = () => {
             <Pressable onPress={() => router.push("/camera")}>
                 <Text style={styles.button}>Recognize again</Text>
             </Pressable>
+            {ratings.map(rating => (
+                <Text>{rating.name}</Text>
+            ))}
         </View>
     );
 
