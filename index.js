@@ -71,7 +71,6 @@ app.post("/ratings/get", (req, res) => {
         if(docs == null) {
             return res.send({error: true, message: "Energydrink does not exist!"});
         }
-        console.log(docs);
         return res.send({error: false, ratings: docs});
     })
 });

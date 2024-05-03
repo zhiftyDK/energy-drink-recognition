@@ -1,26 +1,62 @@
 import { useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
-import { Text, View, StyleSheet, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { router } from "expo-router";
 
 const ResultPage = () => {
     const params = useLocalSearchParams();
     const [ratings, setRatings] = useState([]);
     
-    fetch("http://192.168.1.71:3000/ratings/get", {
-        method: "POST",
-        body: JSON.stringify({
-            energydrink: JSON.parse(params.recogResult).label,
-        }),
-        headers: {
-            "Content-Type": "application/json",
+    // Create rating
+    const [name, setName] = useState();
+    const [comment, setComment] = useState();
+    const [rating, setRating] = useState();
+    
+    useEffect(() => {
+        fetch("http://192.168.1.71:3000/ratings/get", {
+            method: "POST",
+            body: JSON.stringify({
+                energydrink: JSON.parse(params.recogResult).label,
+            }),
+            headers: {
+                "Content-Type": "application/json",
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            setRatings(data.ratings);
+        });
+    }, []);
+
+    function createRating() {
+        if(name && comment && rating) {
+            fetch("http://192.168.1.71:3000/ratings/create", {
+                method: "POST",
+                body: JSON.stringify({
+                    name: name,
+                    comment: comment,
+                    rating: rating,
+                    energydrink: JSON.parse(params.recogResult).label,
+                }),
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setRatings(ratings.push({_id: crypto.randomUUID(), name: name, comment: comment, rating: rating}));
+            });
         }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        setRatings(data);
-    });
+    }
+
+    function renderStars(numStars) {
+        const stars = [];
+        for (let i = 0; i < numStars; i++) {
+            stars.push('⭐');
+        }
+        return stars.join('');
+    }
 
     return (
         <View style={styles.container}>
@@ -28,12 +64,23 @@ const ResultPage = () => {
             <Pressable onPress={() => router.push("/camera")}>
                 <Text style={styles.button}>Recognize again</Text>
             </Pressable>
+            <Text style={styles.header}>Rate the energydrink:</Text>
+            <TextInput style={styles.input} editable placeholder="Whats your name?" onChangeText={text => setName(text)}></TextInput>
+            <TextInput style={styles.input} editable placeholder="Comment on the drink!" onChangeText={text => setComment(text)}></TextInput>
+            <TextInput style={styles.input} editable placeholder="Rate the drink from 1 to 5!" onChangeText={text => setRating(text)}></TextInput>
+            <Pressable onPress={() => createRating()}>
+                <Text style={[styles.button, {marginTop: "5%"}]}>Create rating</Text>
+            </Pressable>
+            <Text style={styles.header}>Ratings:</Text>
             {ratings.map(rating => (
-                <Text>{rating.name}</Text>
+                <View key={rating._id} style={styles.rating}>
+                    <Text><Text style={{fontWeight: "bold"}}>Name:</Text> {rating.name}</Text>
+                    <Text><Text style={{fontWeight: "bold"}}>Comment:</Text> {rating.comment}</Text>
+                    <Text><Text style={{fontWeight: "bold"}}>Rating:</Text> {renderStars(parseInt(rating.rating))}</Text>
+                </View>
             ))}
         </View>
     );
-
 };
 
 const styles = StyleSheet.create({
@@ -57,6 +104,18 @@ const styles = StyleSheet.create({
         padding: 10,
         backgroundColor: "#000",
         color: "#fff"
+    },
+    input: {
+        marginTop: "5%",
+        padding: 10,
+        borderStyle: "solid",
+        borderColor: "#000",
+        borderWidth: 2
+    },
+    rating: {
+        marginTop: "5%",
+        padding: 10,
+        backgroundColor: "#e0e0e0"
     }
 });
 
