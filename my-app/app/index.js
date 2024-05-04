@@ -2,6 +2,8 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { router } from "expo-router";
 
+console.log(process.env.IP_ADDRESS);
+
 // Definerer en funktionskomponent for hjemmesiden.
 const HomePage = () => {
     return (

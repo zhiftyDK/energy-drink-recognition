@@ -60,7 +60,7 @@ const CameraPage = () => {
             uri: photoURI
         });
         // Send billedet til serveren for sammenligning og håndter resultatet.
-        fetch("http://192.168.1.71:3000/compare", {
+        fetch("http://" + process.env.IP_ADDRESS + ":3000/compare", {
             method: "POST",
             body: formData
         })
