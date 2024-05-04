@@ -1,6 +1,8 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { router } from "expo-router";
 
+console.log(process.env.IP_ADDRESS);
+
 const HomePage = () => {
     return (
         <View style={styles.container}>

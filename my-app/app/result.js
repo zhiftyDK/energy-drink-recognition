@@ -13,7 +13,7 @@ const ResultPage = () => {
     const [rating, setRating] = useState();
     
     useEffect(() => {
-        fetch("http://192.168.1.71:3000/ratings/get", {
+        fetch("http://" + process.env.IP_ADDRESS + ":3000/ratings/get", {
             method: "POST",
             body: JSON.stringify({
                 energydrink: JSON.parse(params.recogResult).label,
@@ -30,7 +30,7 @@ const ResultPage = () => {
 
     function createRating() {
         if(name && comment && rating) {
-            fetch("http://192.168.1.71:3000/ratings/create", {
+            fetch("http://" + process.env.IP_ADDRESS + ":3000/ratings/create", {
                 method: "POST",
                 body: JSON.stringify({
                     name: name,
