@@ -1,7 +1,7 @@
 // Importer nødvendige moduler og hooks fra Expo og React Native.
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
+import { Text, ScrollView, SafeAreaView, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { router } from "expo-router";
 
 // Definerer ResultPage-komponenten.
@@ -51,7 +51,7 @@ const ResultPage = () => {
             .then(data => {
                 console.log(data);
                 // Tilføjer den nye rating til den eksisterende liste.
-                setRatings(ratings.push({_id: crypto.randomUUID(), name: name, comment: comment, rating: rating}));
+                router.push("/result?recogResult=" + params.recogResult);
             });
         }
     }
@@ -67,27 +67,29 @@ const ResultPage = () => {
     
     // Returnerer brugergrænsefladen for resultat-siden.
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Result: {JSON.parse(params.recogResult).label}</Text>
-            <Pressable onPress={() => router.push("/camera")}>
-                <Text style={styles.button}>Recognize again</Text>
-            </Pressable>
-            <Text style={styles.header}>Rate the energydrink:</Text>
-            <TextInput style={styles.input} editable placeholder="Whats your name?" onChangeText={text => setName(text)}></TextInput>
-            <TextInput style={styles.input} editable placeholder="Comment on the drink!" onChangeText={text => setComment(text)}></TextInput>
-            <TextInput style={styles.input} editable placeholder="Rate the drink from 1 to 5!" onChangeText={text => setRating(text)}></TextInput>
-            <Pressable onPress={() => createRating()}>
-                <Text style={[styles.button, {marginTop: "5%"}]}>Create rating</Text>
-            </Pressable>
-            <Text style={styles.header}>Ratings:</Text>
-            {ratings.map(rating => (
-                <View key={rating._id} style={styles.rating}>
-                    <Text><Text style={{fontWeight: "bold"}}>Name:</Text> {rating.name}</Text>
-                    <Text><Text style={{fontWeight: "bold"}}>Comment:</Text> {rating.comment}</Text>
-                    <Text><Text style={{fontWeight: "bold"}}>Rating:</Text> {renderStars(parseInt(rating.rating))}</Text>
-                </View>
-            ))}
-        </View>
+        <SafeAreaView style={styles.container}>
+            <ScrollView style={styles.scrollView}>
+                <Text style={styles.header}>Result: {JSON.parse(params.recogResult).label}</Text>
+                <Pressable onPress={() => router.push("/camera")}>
+                    <Text style={styles.button}>Recognize again</Text>
+                </Pressable>
+                <Text style={styles.header}>Rate the energydrink:</Text>
+                <TextInput style={styles.input} editable placeholder="Whats your name?" onChangeText={text => setName(text)}></TextInput>
+                <TextInput style={styles.input} editable placeholder="Comment on the drink!" onChangeText={text => setComment(text)}></TextInput>
+                <TextInput style={styles.input} editable placeholder="Rate the drink from 1 to 5!" onChangeText={text => setRating(text)}></TextInput>
+                <Pressable onPress={() => createRating()}>
+                    <Text style={[styles.button, {marginTop: "5%"}]}>Create rating</Text>
+                </Pressable>
+                <Text style={styles.header}>Ratings:</Text>
+                {ratings.map(rating => (
+                    <View key={rating._id} style={styles.rating}>
+                        <Text><Text style={{fontWeight: "bold"}}>Name:</Text> {rating.name}</Text>
+                        <Text><Text style={{fontWeight: "bold"}}>Comment:</Text> {rating.comment}</Text>
+                        <Text><Text style={{fontWeight: "bold"}}>Rating:</Text> {renderStars(parseInt(rating.rating))}</Text>
+                    </View>
+                ))}
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -97,6 +99,9 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    scrollView: {
+        paddingHorizontal: 80,
     },
     header: {
         color: "#000",
