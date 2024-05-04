@@ -1,17 +1,21 @@
+// Importer nødvendige moduler og hooks fra Expo og React Native.
 import { useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Pressable, TextInput } from 'react-native';
 import { router } from "expo-router";
 
+// Definerer ResultPage-komponenten.
 const ResultPage = () => {
+    // Henter søgeparametre fra den lokale routing.
     const params = useLocalSearchParams();
+
+    // Definerer tilstande til at håndtere ratings og indtastninger.
     const [ratings, setRatings] = useState([]);
-    
-    // Create rating
     const [name, setName] = useState();
     const [comment, setComment] = useState();
     const [rating, setRating] = useState();
     
+    // Brug effekt-hook til at hente eksisterende ratings for en bestemt energidrik.
     useEffect(() => {
         fetch("http://" + process.env.IP_ADDRESS + ":3000/ratings/get", {
             method: "POST",
@@ -28,6 +32,7 @@ const ResultPage = () => {
         });
     }, []);
 
+    // Funktion til at oprette en ny rating for en energidrik.
     function createRating() {
         if(name && comment && rating) {
             fetch("http://" + process.env.IP_ADDRESS + ":3000/ratings/create", {
@@ -45,11 +50,13 @@ const ResultPage = () => {
             .then(response => response.json())
             .then(data => {
                 console.log(data);
+                // Tilføjer den nye rating til den eksisterende liste.
                 setRatings(ratings.push({_id: crypto.randomUUID(), name: name, comment: comment, rating: rating}));
             });
         }
     }
 
+    // Funktion til at gengive et antal stjerner baseret på et tal.
     function renderStars(numStars) {
         const stars = [];
         for (let i = 0; i < numStars; i++) {
@@ -57,7 +64,8 @@ const ResultPage = () => {
         }
         return stars.join('');
     }
-
+    
+    // Returnerer brugergrænsefladen for resultat-siden.
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Result: {JSON.parse(params.recogResult).label}</Text>
@@ -83,6 +91,7 @@ const ResultPage = () => {
     );
 };
 
+// Definerer stilarter for komponenterne ved hjælp af StyleSheet fra React Native.
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -119,4 +128,5 @@ const styles = StyleSheet.create({
     }
 });
 
+// Eksporterer ResultPage-komponenten som standard.
 export default ResultPage;
