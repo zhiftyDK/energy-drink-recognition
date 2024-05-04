@@ -1,19 +1,24 @@
+// Importerer nødvendige komponenter fra React Native og Expo Router.
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { router } from "expo-router";
 
 console.log(process.env.IP_ADDRESS);
 
+// Definerer en funktionskomponent for hjemmesiden.
 const HomePage = () => {
     return (
+        // Returnerer en View-komponent som hovedbeholderen.
         <View style={styles.container}>
             <Text style={styles.header}>Energy Drink Recognizer</Text>
             <Pressable onPress={() => router.push("/camera")}>
                 <Text style={styles.button}>Start Recognizing</Text>
             </Pressable>
         </View>
+        // Opretter en knap ved hjælp af Pressable, der navigerer til kamera-siden, når der trykkes på den.
     );
 };
 
+// Definerer stilarter for komponenterne ved hjælp af StyleSheet fra React Native.
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -32,4 +37,5 @@ const styles = StyleSheet.create({
     }
 });
 
+// Eksporterer CameraPage-komponenten som standard.
 export default HomePage;
