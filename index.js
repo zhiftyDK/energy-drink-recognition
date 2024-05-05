@@ -44,33 +44,47 @@ app.post("/compare", multer().single("file"), (req, res) => {
     });
 });
 
+// POST-rute til at oprette en ny vurdering af en energidrik.
 app.post("/ratings/create", (req, res) => {
-    if(req.body.rating < 1 || req.body.rating > 10) {
-        return res.send({error: true, message: "Rating must be between 1 and 10!"});
+    // Tjek om rating-værdien ligger inden for det gyldige interval fra 1 til 5.
+    if(req.body.rating < 1 || req.body.rating > 5) {
+        // Hvis ratingen er uden for intervallet, send fejlmeddelelse til klienten.
+        return res.send({error: true, message: "Rating must be between 1 and 5!"});
     }
+    // Søger i databasen efter den specifikke energidrik for at sikre, at den eksisterer.
     energydrinksdb.findOne({name: req.body.energydrink}, (err, docs) => {
+        // Hvis energidrikken findes i databasen, udfør denne blok.
         if(docs != null) {
+            // Opretter et nyt ratingobjekt med de modtagne data fra forespørgslen.
             const ratingObject = {
                 name: req.body.name,
                 comment: req.body.comment,
                 rating: req.body.rating,
                 energydrink: req.body.energydrink
             }
+            // Indsætter det nye ratingobjekt i ratings-databasen.
             ratingsdb.insert(ratingObject);
+            // Sender bekræftelse tilbage til klienten om, at ratingen er registreret.
             return res.send({error: false, message: "Rating has been registered successfully!"});
         }
     })
 });
 
+// POST-rute til at hente vurderinger baseret på navnet på en energidrik.
 app.post("/ratings/get", (req, res) => {
+    // Logger navnet på den energidrik, der anmodes om, til konsollen for fejlsøgning.
     console.log(req.body.energydrink);
+    // Finder alle dokumenter i ratings-databasen, der matcher den angivne energidrik.
     ratingsdb.find({energydrink: req.body.energydrink}, (err, docs) => {
+        // Hvis der opstår en fejl under databasen forespørgslen, send en fejlbesked.
         if(err) {
             return res.send({error: true, message: "An error occured!"});
         }
+        // Hvis ingen dokumenter findes (dvs. ingen ratings er registreret), send en fejlmeddelelse.
         if(docs == null) {
             return res.send({error: true, message: "Energydrink does not exist!"});
         }
+        // Hvis ratings findes, send dem tilbage til klienten.
         return res.send({error: false, ratings: docs});
     })
 });
